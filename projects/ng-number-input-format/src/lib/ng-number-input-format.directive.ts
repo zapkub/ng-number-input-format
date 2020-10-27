@@ -30,7 +30,14 @@ export class NgNumberInputFormatDirective {
     this.isKeyEvent = false;
   }
   @HostListener('keydown', ['$event'])
-  public handleHostListenerInput(evt: InputEvent) {
+  public handleHostListenerKeydown(evt: KeyboardEvent) {
     this.isKeyEvent = true;
+  }
+
+  @HostListener('input', ['$event'])
+  public handleHostListenerInput(evt: InputEvent) {
+    const val = this.elementRef.nativeElement.value;
+    this.ngmodel.control.patchValue(this.instance.getNumber(), {emitEvent: false});
+    this.elementRef.nativeElement.value = val;
   }
 }

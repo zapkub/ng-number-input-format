@@ -6,11 +6,11 @@
     "directives": [
         {
             "name": "NgNumberInputFormatDirective",
-            "id": "directive-NgNumberInputFormatDirective-d064b3d4ec4d72a06eeee60adcfa0892",
+            "id": "directive-NgNumberInputFormatDirective-bc6c589106d93dea95af7da1975ce619",
             "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.directive.ts",
             "type": "directive",
             "description": "",
-            "sourceCode": "import { Directive, ElementRef, HostListener } from '@angular/core';\n\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective {\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n  ) { }\n\n\n  public get value() {\n    return this.elementRef?.nativeElement?.value;\n  }\n\n  public get isPercisionPosition() {\n\n    /**\n     * find where is percision point\n     */\n    const percisionIdx = this.value.indexOf('.');\n    if (percisionIdx < 0) {\n      return false;\n    }\n    return percisionIdx < this.elementRef.nativeElement.selectionStart;\n  }\n\n  @HostListener('keydown', ['$event'])\n  public handleKeyupHostListener(evt: KeyboardEvent) {\n    /**\n     * block none numeric input\n     */\n    const isNumberKey = /^[0-9\\.\\,]$/g.test(evt.key);\n    if (evt.key.length === 1 && !isNumberKey) {\n      evt.preventDefault();\n      return false;\n    }\n\n    /**\n     * checking if current number already have\n     * 2 percisions\n     */\n    if (\n      isNumberKey &&\n      /^[0-9]*\\.[0-9]{2}$/g.test(this.value) && this.elementRef.nativeElement.selectionStart === this.value?.length\n    ) {\n      evt.preventDefault();\n      return false;\n    }\n\n    if (this.isPercisionPosition) {\n\n    }\n\n    return true;\n  }\n\n  @HostListener('input', ['$event'])\n  public handleInputHostListener(evt: InputEvent) {\n  }\n}\n",
+            "sourceCode": "import { Directive, ElementRef, HostListener } from '@angular/core';\nimport { NgModel } from '@angular/forms';\nimport * as AutoNumeric from 'autonumeric';\n\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective {\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n    protected ngmodel: NgModel,\n  ) {\n\n    this.instance = new AutoNumeric(this.elementRef.nativeElement, '0.00', {\n      emptyInputBehavior: 'null',\n    });\n    this.ngmodel.valueChanges\n      .subscribe(this.handleNgModelUpdate.bind(this));\n  }\n\n  private instance: AutoNumeric;\n\n  private isKeyEvent = false;\n\n  private handleNgModelUpdate(value) {\n    if (!this.isKeyEvent) {\n      this.instance.set(value);\n    }\n    this.isKeyEvent = false;\n  }\n  @HostListener('keydown', ['$event'])\n  public handleHostListenerInput(evt: InputEvent) {\n    this.isKeyEvent = true;\n  }\n}\n",
             "selector": "input[ngNumberInputFormatDirective]",
             "providers": [],
             "inputsClass": [],
@@ -18,7 +18,7 @@
             "hostBindings": [],
             "hostListeners": [
                 {
-                    "name": "input",
+                    "name": "keydown",
                     "args": [
                         {
                             "name": "evt",
@@ -28,24 +28,59 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 60
-                },
-                {
-                    "name": "keydown",
-                    "args": [
-                        {
-                            "name": "evt",
-                            "type": "KeyboardEvent"
-                        }
-                    ],
-                    "argsDecorator": [
-                        "$event"
-                    ],
-                    "line": 30
+                    "line": 33
                 }
             ],
-            "propertiesClass": [],
-            "methodsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "instance",
+                    "type": "AutoNumeric",
+                    "optional": false,
+                    "description": "",
+                    "line": 22,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "isKeyEvent",
+                    "defaultValue": "false",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 24,
+                    "modifierKind": [
+                        112
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "handleNgModelUpdate",
+                    "args": [
+                        {
+                            "name": "value",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 26,
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "value",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -53,9 +88,13 @@
                     {
                         "name": "elementRef",
                         "type": "ElementRef<HTMLInputElement>"
+                    },
+                    {
+                        "name": "ngmodel",
+                        "type": "NgModel"
                     }
                 ],
-                "line": 6,
+                "line": 8,
                 "jsdoctags": [
                     {
                         "name": "elementRef",
@@ -63,35 +102,22 @@
                         "tagName": {
                             "text": "param"
                         }
+                    },
+                    {
+                        "name": "ngmodel",
+                        "type": "NgModel",
+                        "tagName": {
+                            "text": "param"
+                        }
                     }
                 ]
-            },
-            "accessors": {
-                "value": {
-                    "name": "value",
-                    "getSignature": {
-                        "name": "value",
-                        "type": "",
-                        "returnType": "",
-                        "line": 13
-                    }
-                },
-                "isPercisionPosition": {
-                    "name": "isPercisionPosition",
-                    "getSignature": {
-                        "name": "isPercisionPosition",
-                        "type": "",
-                        "returnType": "",
-                        "line": 17
-                    }
-                }
             }
         }
     ],
     "components": [
         {
             "name": "NgNumberInputFormatComponent",
-            "id": "component-NgNumberInputFormatComponent-65fd22e6441cb0eb9091f2517d656c5a",
+            "id": "component-NgNumberInputFormatComponent-ce60058dfa8fb5d221c8cd2a46d7ae6b",
             "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -101,11 +127,34 @@
             "selector": "ng-number-input-format",
             "styleUrls": [],
             "styles": [],
-            "template": "<input ngNumberInputFormatDirective />",
+            "template": "<input [disabled]=\"disabled\" [readOnly]=\"readonly\" [ngModel]=\"value\" (ngModelChange)=\"valueChange.emit($event)\" ngNumberInputFormatDirective />",
             "templateUrl": [],
             "viewProviders": [],
-            "inputsClass": [],
-            "outputsClass": [],
+            "inputsClass": [
+                {
+                    "name": "disabled",
+                    "defaultValue": "false",
+                    "line": 18
+                },
+                {
+                    "name": "readonly",
+                    "defaultValue": "false",
+                    "line": 12
+                },
+                {
+                    "name": "value",
+                    "defaultValue": "0",
+                    "line": 15
+                }
+            ],
+            "outputsClass": [
+                {
+                    "name": "valueChange",
+                    "defaultValue": "new EventEmitter<number>()",
+                    "line": 21,
+                    "type": "EventEmitter"
+                }
+            ],
             "propertiesClass": [],
             "methodsClass": [
                 {
@@ -114,7 +163,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 13,
+                    "line": 25,
                     "modifierKind": [
                         114
                     ]
@@ -125,7 +174,7 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'ng-number-input-format',\n  template: `<input ngNumberInputFormatDirective />`,\n  styles: [\n  ]\n})\nexport class NgNumberInputFormatComponent implements OnInit {\n\n  constructor() { }\n\n  public ngOnInit(): void {\n  }\n\n}\n",
+            "sourceCode": "import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';\n\n@Component({\n  selector: 'ng-number-input-format',\n  template: `<input [disabled]=\"disabled\" [readOnly]=\"readonly\" [ngModel]=\"value\" (ngModelChange)=\"valueChange.emit($event)\" ngNumberInputFormatDirective />`,\n  styles: [\n  ]\n})\nexport class NgNumberInputFormatComponent implements OnInit {\n\n  @Input()\n  public readonly = false;\n\n  @Input()\n  public value = 0;\n\n  @Input()\n  public disabled = false;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n\n  constructor() { }\n\n  public ngOnInit(): void {\n  }\n\n}\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
@@ -133,7 +182,7 @@
                 "name": "constructor",
                 "description": "",
                 "args": [],
-                "line": 9
+                "line": 21
             },
             "implements": [
                 "OnInit"
@@ -201,7 +250,15 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "",
-                "defaultValue": "Template.bind({})"
+                "defaultValue": "Template.bind({}, { disabled: true })"
+            },
+            {
+                "name": "DisabledWithValue",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({}, { disabled: true, value: 2000.33 })"
             },
             {
                 "name": "Empty",
@@ -209,7 +266,7 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "",
-                "defaultValue": "Template.bind({})"
+                "defaultValue": "Template.bind({ }, { value: 0.00 })"
             },
             {
                 "name": "Readonly",
@@ -217,7 +274,7 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "",
-                "defaultValue": "Template.bind({})"
+                "defaultValue": "Template.bind({}, {readonly: true, value: 10.312, })"
             },
             {
                 "name": "require",
@@ -240,7 +297,7 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "Story<NgNumberInputFormatComponent>",
-                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  component: NgNumberInputFormatComponent,\n  props: args,\n})"
+                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\">\n    </ng-number-input-format>\n    {{value}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n  `,\n})"
             },
             {
                 "name": "TwoWayBinding",
@@ -248,7 +305,7 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "",
-                "defaultValue": "Template.bind({})"
+                "defaultValue": "Template.bind({}, { value: 10.12 })"
             }
         ],
         "functions": [],
@@ -279,7 +336,15 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "",
-                    "defaultValue": "Template.bind({})"
+                    "defaultValue": "Template.bind({}, { disabled: true })"
+                },
+                {
+                    "name": "DisabledWithValue",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({}, { disabled: true, value: 2000.33 })"
                 },
                 {
                     "name": "Empty",
@@ -287,7 +352,7 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "",
-                    "defaultValue": "Template.bind({})"
+                    "defaultValue": "Template.bind({ }, { value: 0.00 })"
                 },
                 {
                     "name": "Readonly",
@@ -295,7 +360,7 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "",
-                    "defaultValue": "Template.bind({})"
+                    "defaultValue": "Template.bind({}, {readonly: true, value: 10.312, })"
                 },
                 {
                     "name": "SetValue",
@@ -311,7 +376,7 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "Story<NgNumberInputFormatComponent>",
-                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  component: NgNumberInputFormatComponent,\n  props: args,\n})"
+                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\">\n    </ng-number-input-format>\n    {{value}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n  `,\n})"
                 },
                 {
                     "name": "TwoWayBinding",
@@ -319,7 +384,7 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "",
-                    "defaultValue": "Template.bind({})"
+                    "defaultValue": "Template.bind({}, { value: 10.12 })"
                 }
             ]
         },
@@ -338,7 +403,7 @@
                 "linktype": "component",
                 "name": "NgNumberInputFormatComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/3",
+                "coverageCount": "0/7",
                 "status": "low"
             },
             {
@@ -347,7 +412,7 @@
                 "linktype": "directive",
                 "name": "NgNumberInputFormatDirective",
                 "coveragePercent": 0,
-                "coverageCount": "0/4",
+                "coverageCount": "0/6",
                 "status": "low"
             },
             {
@@ -376,6 +441,16 @@
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
                 "name": "Disabled",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "DisabledWithValue",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
