@@ -5,8 +5,16 @@
   "author": "Rungsikorn.R",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/zapkub/ng-number-input-format"
   },
+  "bugs": {
+    "url": "https://github.com/zapkub/ng-number-input-format/issues"
+  },
+  "keywords": [
+    "angular",
+    "autonumeric"
+  ],
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^9.1.12",
     "@angular/core": "^9.1.12",
