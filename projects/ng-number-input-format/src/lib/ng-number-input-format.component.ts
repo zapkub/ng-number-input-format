@@ -1,12 +1,18 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-
 @Component({
   selector: 'ng-number-input-format',
-  template: `<input [disabled]="disabled" [readOnly]="readonly" [ngModel]="value" (ngModelChange)="valueChange.emit($event)" ngNumberInputFormatDirective />`,
+  template: `<input ngNumberInputFormatDirective [value]="value" (valueChange)="valueChange.emit($event)" [disabled]="disabled" [readOnly]="readonly" />`,
   styles: [
   ]
 })
 export class NgNumberInputFormatComponent implements OnInit {
+
+  public get typeof() {
+    return typeof this.value;
+  }
+
+  constructor() {
+  }
 
   @Input()
   public readonly = false;
@@ -20,7 +26,6 @@ export class NgNumberInputFormatComponent implements OnInit {
   @Output()
   public readonly valueChange = new EventEmitter<number>();
 
-  constructor() { }
 
   public ngOnInit(): void {
   }

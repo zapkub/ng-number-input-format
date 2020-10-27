@@ -18,12 +18,15 @@ export default {
 const Template: Story<NgNumberInputFormatComponent> = (args: NgNumberInputFormatComponent) => ({
   props: args,
   template: `
-    <ng-number-input-format [disabled]="disabled" [(value)]="value" [readonly]="readonly">
-    </ng-number-input-format>
+    <ng-number-input-format #input [disabled]="disabled" [(value)]="value" [readonly]="readonly"></ng-number-input-format>
     {{value}}
+    {{input.typeof}}
 
     <button (click)="value = 20123.33">set value to 20123.33</button>
     <button (click)="value=value+301.21">add 301.21</button>
+
+    <ng-number-input-format #dd></ng-number-input-format>
+    {{dd.value}}
   `,
 });
 

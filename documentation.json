@@ -6,81 +6,19 @@
     "directives": [
         {
             "name": "NgNumberInputFormatDirective",
-            "id": "directive-NgNumberInputFormatDirective-bc6c589106d93dea95af7da1975ce619",
+            "id": "directive-NgNumberInputFormatDirective-0c07272c96fc9122b3599e577690e92b",
             "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.directive.ts",
             "type": "directive",
             "description": "",
-            "sourceCode": "import { Directive, ElementRef, HostListener } from '@angular/core';\nimport { NgModel } from '@angular/forms';\nimport * as AutoNumeric from 'autonumeric';\n\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective {\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n    protected ngmodel: NgModel,\n  ) {\n\n    this.instance = new AutoNumeric(this.elementRef.nativeElement, '0.00', {\n      emptyInputBehavior: 'null',\n    });\n    this.ngmodel.valueChanges\n      .subscribe(this.handleNgModelUpdate.bind(this));\n  }\n\n  private instance: AutoNumeric;\n\n  private isKeyEvent = false;\n\n  private handleNgModelUpdate(value) {\n    if (!this.isKeyEvent) {\n      this.instance.set(value);\n    }\n    this.isKeyEvent = false;\n  }\n  @HostListener('keydown', ['$event'])\n  public handleHostListenerInput(evt: InputEvent) {\n    this.isKeyEvent = true;\n  }\n}\n",
+            "sourceCode": "import { Directive, ElementRef } from '@angular/core';\nimport { NgModel } from '@angular/forms';\n\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective {\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n    protected ngmodel: NgModel,\n  ) {\n  }\n\n  // @HostListener('input', ['$event'])\n  // public handleHostListenerInput(evt: InputEvent) {\n  //   console.log(evt);\n  //   const val = this.elementRef.nativeElement.value;\n  //   this.ngmodel.control.setValue(this.instance.getNumber(), );\n  //   this.elementRef.nativeElement.value = val;\n  // }\n}\n",
             "selector": "input[ngNumberInputFormatDirective]",
             "providers": [],
             "inputsClass": [],
             "outputsClass": [],
             "hostBindings": [],
-            "hostListeners": [
-                {
-                    "name": "keydown",
-                    "args": [
-                        {
-                            "name": "evt",
-                            "type": "InputEvent"
-                        }
-                    ],
-                    "argsDecorator": [
-                        "$event"
-                    ],
-                    "line": 33
-                }
-            ],
-            "propertiesClass": [
-                {
-                    "name": "instance",
-                    "type": "AutoNumeric",
-                    "optional": false,
-                    "description": "",
-                    "line": 22,
-                    "modifierKind": [
-                        112
-                    ]
-                },
-                {
-                    "name": "isKeyEvent",
-                    "defaultValue": "false",
-                    "type": "",
-                    "optional": false,
-                    "description": "",
-                    "line": 24,
-                    "modifierKind": [
-                        112
-                    ]
-                }
-            ],
-            "methodsClass": [
-                {
-                    "name": "handleNgModelUpdate",
-                    "args": [
-                        {
-                            "name": "value",
-                            "type": ""
-                        }
-                    ],
-                    "optional": false,
-                    "returnType": "void",
-                    "typeParameters": [],
-                    "line": 26,
-                    "modifierKind": [
-                        112
-                    ],
-                    "jsdoctags": [
-                        {
-                            "name": "value",
-                            "type": "",
-                            "tagName": {
-                                "text": "param"
-                            }
-                        }
-                    ]
-                }
-            ],
+            "hostListeners": [],
+            "propertiesClass": [],
+            "methodsClass": [],
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -94,7 +32,7 @@
                         "type": "NgModel"
                     }
                 ],
-                "line": 8,
+                "line": 7,
                 "jsdoctags": [
                     {
                         "name": "elementRef",
@@ -117,7 +55,7 @@
     "components": [
         {
             "name": "NgNumberInputFormatComponent",
-            "id": "component-NgNumberInputFormatComponent-ce60058dfa8fb5d221c8cd2a46d7ae6b",
+            "id": "component-NgNumberInputFormatComponent-04094037ada1076d3f4ec6409bdbece8",
             "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -127,43 +65,180 @@
             "selector": "ng-number-input-format",
             "styleUrls": [],
             "styles": [],
-            "template": "<input [disabled]=\"disabled\" [readOnly]=\"readonly\" [ngModel]=\"value\" (ngModelChange)=\"valueChange.emit($event)\" ngNumberInputFormatDirective />",
+            "template": "<input (keydown)=\"handleInputKeydown($event)\" (keyup)=\"handleInputKeyup($event)\" (input)=\"handleInputChange($event)\" #input [disabled]=\"disabled\" [readOnly]=\"readonly\" />",
             "templateUrl": [],
             "viewProviders": [],
             "inputsClass": [
                 {
                     "name": "disabled",
                     "defaultValue": "false",
-                    "line": 18
+                    "line": 36
                 },
                 {
                     "name": "readonly",
                     "defaultValue": "false",
-                    "line": 12
+                    "line": 30
                 },
                 {
                     "name": "value",
                     "defaultValue": "0",
-                    "line": 15
+                    "line": 33
                 }
             ],
             "outputsClass": [
                 {
                     "name": "valueChange",
                     "defaultValue": "new EventEmitter<number>()",
-                    "line": 21,
+                    "line": 39,
                     "type": "EventEmitter"
                 }
             ],
-            "propertiesClass": [],
+            "propertiesClass": [
+                {
+                    "name": "cursorEnd",
+                    "type": "number",
+                    "optional": true,
+                    "description": "",
+                    "line": 45,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "cursorStart",
+                    "type": "number",
+                    "optional": true,
+                    "description": "",
+                    "line": 44,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "elementRef",
+                    "type": "ElementRef<HTMLInputElement>",
+                    "optional": false,
+                    "description": "",
+                    "line": 42,
+                    "decorators": [
+                        {
+                            "name": "ViewChild",
+                            "stringifiedArguments": "'input'"
+                        }
+                    ],
+                    "modifierKind": [
+                        112
+                    ]
+                }
+            ],
             "methodsClass": [
+                {
+                    "name": "amountOfCommaToPos",
+                    "args": [
+                        {
+                            "name": "pos",
+                            "type": "number"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "any",
+                    "typeParameters": [],
+                    "line": 47,
+                    "modifierKind": [
+                        112
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "pos",
+                            "type": "number",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleInputChange",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "InputEvent"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 65,
+                    "modifierKind": [
+                        114
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "InputEvent",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleInputKeydown",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "KeyboardEvent"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 58,
+                    "modifierKind": [
+                        114
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "KeyboardEvent",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "handleInputKeyup",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "KeyboardEvent"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 76,
+                    "modifierKind": [
+                        114
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "KeyboardEvent",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
                 {
                     "name": "ngOnInit",
                     "args": [],
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 25,
+                    "line": 56,
                     "modifierKind": [
                         114
                     ]
@@ -174,7 +249,7 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';\n\n@Component({\n  selector: 'ng-number-input-format',\n  template: `<input [disabled]=\"disabled\" [readOnly]=\"readonly\" [ngModel]=\"value\" (ngModelChange)=\"valueChange.emit($event)\" ngNumberInputFormatDirective />`,\n  styles: [\n  ]\n})\nexport class NgNumberInputFormatComponent implements OnInit {\n\n  @Input()\n  public readonly = false;\n\n  @Input()\n  public value = 0;\n\n  @Input()\n  public disabled = false;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n\n  constructor() { }\n\n  public ngOnInit(): void {\n  }\n\n}\n",
+            "sourceCode": "import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';\n@Component({\n  selector: 'ng-number-input-format',\n  template: `<input (keydown)=\"handleInputKeydown($event)\" (keyup)=\"handleInputKeyup($event)\" (input)=\"handleInputChange($event)\" #input [disabled]=\"disabled\" [readOnly]=\"readonly\" />`,\n  styles: [\n  ]\n})\nexport class NgNumberInputFormatComponent implements OnInit {\n\n  public get typeof() {\n    return typeof this.value;\n  }\n\n  constructor() {\n  }\n\n\n  private get rawValue() {\n    return this.elementRef.nativeElement.value;\n  }\n  private get floatValue() {\n    let val = parseFloat(this.rawValue.replace(/,/g, ''));\n    if (isNaN(val)) {\n      val = 0;\n    }\n    return val;\n  }\n\n  @Input()\n  public readonly = false;\n\n  @Input()\n  public value = 0;\n\n  @Input()\n  public disabled = false;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n\n  @ViewChild('input')\n  private elementRef: ElementRef<HTMLInputElement>;\n\n  private cursorStart?: number;\n  private cursorEnd?: number;\n\n  private amountOfCommaToPos(pos: number) {\n    return this.rawValue.substring(0, pos).split('').reduce((curr, n) => {\n      if (n === ',') {\n        curr++;\n      }\n      return curr;\n    }, 0);\n  }\n\n  public ngOnInit(): void {\n  }\n  public handleInputKeydown(event: KeyboardEvent) {\n    console.log('keydown', event);\n    /**\n     * find position of cursor after keydown\n     */\n  }\n\n  public handleInputChange(event: InputEvent) {\n    console.log('input', event);\n    this.cursorStart = this.elementRef.nativeElement.selectionStart;\n    this.cursorEnd = this.elementRef.nativeElement.selectionEnd;\n    if (/^[0-9]*$/.test(this.rawValue.replace(/,/g, ''))) {\n      const val = this.floatValue;\n      this.elementRef.nativeElement.value = val.toLocaleString();\n      this.valueChange.emit(val);\n      this.value = val;\n    }\n  }\n  public handleInputKeyup(event: KeyboardEvent) {\n    console.log('keyup', event);\n    console.log('comma = ', this.amountOfCommaToPos(this.cursorStart));\n    /**\n     * restore position of cursor\n     */\n  }\n\n}\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
@@ -182,11 +257,40 @@
                 "name": "constructor",
                 "description": "",
                 "args": [],
-                "line": 21
+                "line": 12
             },
             "implements": [
                 "OnInit"
-            ]
+            ],
+            "accessors": {
+                "typeof": {
+                    "name": "typeof",
+                    "getSignature": {
+                        "name": "typeof",
+                        "type": "",
+                        "returnType": "",
+                        "line": 10
+                    }
+                },
+                "rawValue": {
+                    "name": "rawValue",
+                    "getSignature": {
+                        "name": "rawValue",
+                        "type": "",
+                        "returnType": "",
+                        "line": 18
+                    }
+                },
+                "floatValue": {
+                    "name": "floatValue",
+                    "getSignature": {
+                        "name": "floatValue",
+                        "type": "",
+                        "returnType": "",
+                        "line": 21
+                    }
+                }
+            }
         }
     ],
     "modules": [
@@ -297,7 +401,7 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "Story<NgNumberInputFormatComponent>",
-                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\">\n    </ng-number-input-format>\n    {{value}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n  `,\n})"
+                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n  `,\n})"
             },
             {
                 "name": "TwoWayBinding",
@@ -376,7 +480,7 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "Story<NgNumberInputFormatComponent>",
-                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\">\n    </ng-number-input-format>\n    {{value}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n  `,\n})"
+                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n  `,\n})"
                 },
                 {
                     "name": "TwoWayBinding",
@@ -403,7 +507,7 @@
                 "linktype": "component",
                 "name": "NgNumberInputFormatComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/7",
+                "coverageCount": "0/14",
                 "status": "low"
             },
             {
@@ -412,7 +516,7 @@
                 "linktype": "directive",
                 "name": "NgNumberInputFormatDirective",
                 "coveragePercent": 0,
-                "coverageCount": "0/6",
+                "coverageCount": "0/2",
                 "status": "low"
             },
             {
