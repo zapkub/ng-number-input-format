@@ -1,0 +1,435 @@
+{
+    "pipes": [],
+    "interfaces": [],
+    "injectables": [],
+    "classes": [],
+    "directives": [
+        {
+            "name": "NgNumberInputFormatDirective",
+            "id": "directive-NgNumberInputFormatDirective-d064b3d4ec4d72a06eeee60adcfa0892",
+            "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.directive.ts",
+            "type": "directive",
+            "description": "",
+            "sourceCode": "import { Directive, ElementRef, HostListener } from '@angular/core';\n\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective {\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n  ) { }\n\n\n  public get value() {\n    return this.elementRef?.nativeElement?.value;\n  }\n\n  public get isPercisionPosition() {\n\n    /**\n     * find where is percision point\n     */\n    const percisionIdx = this.value.indexOf('.');\n    if (percisionIdx < 0) {\n      return false;\n    }\n    return percisionIdx < this.elementRef.nativeElement.selectionStart;\n  }\n\n  @HostListener('keydown', ['$event'])\n  public handleKeyupHostListener(evt: KeyboardEvent) {\n    /**\n     * block none numeric input\n     */\n    const isNumberKey = /^[0-9\\.\\,]$/g.test(evt.key);\n    if (evt.key.length === 1 && !isNumberKey) {\n      evt.preventDefault();\n      return false;\n    }\n\n    /**\n     * checking if current number already have\n     * 2 percisions\n     */\n    if (\n      isNumberKey &&\n      /^[0-9]*\\.[0-9]{2}$/g.test(this.value) && this.elementRef.nativeElement.selectionStart === this.value?.length\n    ) {\n      evt.preventDefault();\n      return false;\n    }\n\n    if (this.isPercisionPosition) {\n\n    }\n\n    return true;\n  }\n\n  @HostListener('input', ['$event'])\n  public handleInputHostListener(evt: InputEvent) {\n  }\n}\n",
+            "selector": "input[ngNumberInputFormatDirective]",
+            "providers": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "hostBindings": [],
+            "hostListeners": [
+                {
+                    "name": "input",
+                    "args": [
+                        {
+                            "name": "evt",
+                            "type": "InputEvent"
+                        }
+                    ],
+                    "argsDecorator": [
+                        "$event"
+                    ],
+                    "line": 60
+                },
+                {
+                    "name": "keydown",
+                    "args": [
+                        {
+                            "name": "evt",
+                            "type": "KeyboardEvent"
+                        }
+                    ],
+                    "argsDecorator": [
+                        "$event"
+                    ],
+                    "line": 30
+                }
+            ],
+            "propertiesClass": [],
+            "methodsClass": [],
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "elementRef",
+                        "type": "ElementRef<HTMLInputElement>"
+                    }
+                ],
+                "line": 6,
+                "jsdoctags": [
+                    {
+                        "name": "elementRef",
+                        "type": "ElementRef<HTMLInputElement>",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "accessors": {
+                "value": {
+                    "name": "value",
+                    "getSignature": {
+                        "name": "value",
+                        "type": "",
+                        "returnType": "",
+                        "line": 13
+                    }
+                },
+                "isPercisionPosition": {
+                    "name": "isPercisionPosition",
+                    "getSignature": {
+                        "name": "isPercisionPosition",
+                        "type": "",
+                        "returnType": "",
+                        "line": 17
+                    }
+                }
+            }
+        }
+    ],
+    "components": [
+        {
+            "name": "NgNumberInputFormatComponent",
+            "id": "component-NgNumberInputFormatComponent-65fd22e6441cb0eb9091f2517d656c5a",
+            "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "ng-number-input-format",
+            "styleUrls": [],
+            "styles": [],
+            "template": "<input ngNumberInputFormatDirective />",
+            "templateUrl": [],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 13,
+                    "modifierKind": [
+                        114
+                    ]
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'ng-number-input-format',\n  template: `<input ngNumberInputFormatDirective />`,\n  styles: [\n  ]\n})\nexport class NgNumberInputFormatComponent implements OnInit {\n\n  constructor() { }\n\n  public ngOnInit(): void {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": "",
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 9
+            },
+            "implements": [
+                "OnInit"
+            ]
+        }
+    ],
+    "modules": [
+        {
+            "name": "NgNumberInputFormatModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "NgNumberInputFormatComponent"
+                        },
+                        {
+                            "name": "NgNumberInputFormatDirective"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": []
+                },
+                {
+                    "type": "exports",
+                    "elements": [
+                        {
+                            "name": "NgNumberInputFormatComponent"
+                        },
+                        {
+                            "name": "NgNumberInputFormatDirective"
+                        }
+                    ]
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        }
+    ],
+    "miscellaneous": {
+        "variables": [
+            {
+                "name": "context",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ng-number-input-format/src/test.ts",
+                "type": "",
+                "defaultValue": "require.context('./', true, /\\.spec\\.ts$/)"
+            },
+            {
+                "name": "Disabled",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "Empty",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "Readonly",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "require",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/ng-number-input-format/src/test.ts",
+                "type": "literal type"
+            },
+            {
+                "name": "SetValue",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            },
+            {
+                "name": "Template",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "Story<NgNumberInputFormatComponent>",
+                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  component: NgNumberInputFormatComponent,\n  props: args,\n})"
+            },
+            {
+                "name": "TwoWayBinding",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ng-number-input-format.stories.ts",
+                "type": "",
+                "defaultValue": "Template.bind({})"
+            }
+        ],
+        "functions": [],
+        "typealiases": [],
+        "enumerations": [],
+        "groupedVariables": {
+            "projects/ng-number-input-format/src/test.ts": [
+                {
+                    "name": "context",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ng-number-input-format/src/test.ts",
+                    "type": "",
+                    "defaultValue": "require.context('./', true, /\\.spec\\.ts$/)"
+                },
+                {
+                    "name": "require",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/ng-number-input-format/src/test.ts",
+                    "type": "literal type"
+                }
+            ],
+            "stories/ng-number-input-format.stories.ts": [
+                {
+                    "name": "Disabled",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Empty",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Readonly",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "SetValue",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "Story<NgNumberInputFormatComponent>",
+                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  component: NgNumberInputFormatComponent,\n  props: args,\n})"
+                },
+                {
+                    "name": "TwoWayBinding",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ng-number-input-format.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                }
+            ]
+        },
+        "groupedFunctions": {},
+        "groupedEnumerations": {},
+        "groupedTypeAliases": {}
+    },
+    "routes": [],
+    "coverage": {
+        "count": 0,
+        "status": "low",
+        "files": [
+            {
+                "filePath": "projects/ng-number-input-format/src/lib/ng-number-input-format.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "NgNumberInputFormatComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ng-number-input-format/src/lib/ng-number-input-format.directive.ts",
+                "type": "directive",
+                "linktype": "directive",
+                "name": "NgNumberInputFormatDirective",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ng-number-input-format/src/test.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "context",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ng-number-input-format/src/test.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "require",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Disabled",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Empty",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Readonly",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "SetValue",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "Template",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ng-number-input-format.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "TwoWayBinding",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            }
+        ]
+    }
+}
