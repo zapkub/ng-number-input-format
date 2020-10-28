@@ -104,7 +104,7 @@ export class NgNumberInputFormatDirective {
 
   @HostListener('blur')
   public handleHostListenerBlur() {
-    this.elementRef.nativeElement.value = Autonumeric.format(this.value, {});
+    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
   }
 
   @HostListener('focus')
