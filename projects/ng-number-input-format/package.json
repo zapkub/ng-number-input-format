@@ -1,6 +1,6 @@
 {
   "name": "ng-number-input-format",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Ng Number Input Format is a simple Angular input field with Autonumeric support with 2 way binding",
   "author": "Rungsikorn.R",
   "repository": {

@@ -11,8 +11,7 @@ export class NgNumberInputFormatComponent implements OnInit {
     return typeof this.value;
   }
 
-  constructor() {
-  }
+  constructor() { }
 
   @Input()
   public readonly = false;

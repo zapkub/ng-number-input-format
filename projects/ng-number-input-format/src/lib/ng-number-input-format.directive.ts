@@ -6,18 +6,21 @@ import * as Autonumeric from 'autonumeric';
 export class NgNumberInputFormatDirective {
 
   @Input()
-  public value = 0;
-
-  @Output()
-  public readonly valueChange = new EventEmitter<number>();
+  public set value(v) {
+    this._value = v;
+    if (this.isFocus) {
+      this.elementRef.nativeElement.value = this._value + '';
+    } else {
+      this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
+    }
+  }
+  public get value() {
+    return this._value;
+  }
 
   constructor(
     protected elementRef: ElementRef<HTMLInputElement>,
   ) {
-  }
-
-  private parseFloat(value: string) {
-    return parseFloat(value.replace(/,/g, ''));
   }
   private get selectionStart() {
     return this.elementRef.nativeElement.selectionStart;
@@ -28,15 +31,6 @@ export class NgNumberInputFormatDirective {
 
   private get rawValue(): string {
     return this.elementRef.nativeElement.value || '';
-  }
-  private isDecimalPosition(evt: KeyboardEvent) {
-    const pos = this.selectionStart;
-    const poe = this.selectionEnd;
-    const dotPos = this.rawValue.split('').findIndex(v => v === '.');
-    if (dotPos < 0) {
-      return false;
-    }
-    return pos > dotPos && poe > dotPos;
   }
 
   private get isDecimalIsLimit() {
@@ -49,6 +43,24 @@ export class NgNumberInputFormatDirective {
 
   private get isDecimalExists() {
     return this.rawValue.split('.').length > 1;
+  }
+  private _value = 0;
+
+  @Output()
+  public readonly valueChange = new EventEmitter<number>();
+  private isFocus = false;
+
+  private parseFloat(value: string) {
+    return parseFloat(value.replace(/,/g, ''));
+  }
+  private isDecimalPosition(evt: KeyboardEvent) {
+    const pos = this.selectionStart;
+    const poe = this.selectionEnd;
+    const dotPos = this.rawValue.split('').findIndex(v => v === '.');
+    if (dotPos < 0) {
+      return false;
+    }
+    return pos > dotPos && poe > dotPos;
   }
 
   private isNumberInput(evt: KeyboardEvent) {
@@ -88,11 +100,16 @@ export class NgNumberInputFormatDirective {
 
   @HostListener('input', ['$event'])
   public handleHostListenerInput(evt: InputEvent) {
+    if (/.*\.$/.test(this.rawValue)) {
 
-
-    const val = this.parseFloat(this.elementRef.nativeElement.value);
-    this.valueChange.emit(val);
-    this.value = val;
+    } else {
+      let val = this.parseFloat(this.rawValue);
+      if (isNaN(val)) {
+        val = 0;
+      }
+      this.valueChange.emit(val);
+      this.value = val;
+    }
 
   }
 
@@ -104,11 +121,13 @@ export class NgNumberInputFormatDirective {
 
   @HostListener('blur')
   public handleHostListenerBlur() {
+    this.isFocus = false;
     this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
   }
 
   @HostListener('focus')
   public handleHostListenerFocus() {
+    this.isFocus = true;
     let val = this.parseFloat(this.rawValue);
     if (isNaN(val)) {
       val = 0;
