@@ -1,4 +1,9 @@
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { moduleMetadata } from '@storybook/angular';
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
 import { Meta, Story } from '@storybook/angular/types-6-0';
@@ -10,7 +15,12 @@ export default {
   decorators: [
     moduleMetadata({
       declarations: [],
-      imports: [CommonModule, NgNumberInputFormatModule],
+      imports: [
+        BrowserAnimationsModule,
+        CommonModule, NgNumberInputFormatModule,
+        MatInputModule, MatFormFieldModule,
+        FormsModule,
+      ],
     }),
   ],
 } as Meta;
@@ -30,10 +40,33 @@ const Template: Story<NgNumberInputFormatComponent> = (args: NgNumberInputFormat
   `,
 });
 
-export const Empty = Template.bind({ }, { value: 0.00 });
+export const Empty = Template.bind({}, { value: 0.00 });
 export const TwoWayBinding = Template.bind({}, { value: 10.12 });
 export const SetValue = Template.bind({});
-export const Readonly = Template.bind({}, {readonly: true, value: 10.312, });
+export const Readonly = Template.bind({}, { readonly: true, value: 10.312, });
 export const Disabled = Template.bind({}, { disabled: true });
 export const DisabledWithValue = Template.bind({}, { disabled: true, value: 2000.33 });
 
+@Component({
+  template: `
+  <mat-form-field appearance="fill">
+    <input matInput ngNumberInputFormatDirective [(value)]="value" />
+  </mat-form-field>
+  `,
+})
+class NestedComponent {
+  public data = {
+    amount: 2012000
+  };
+  public get value() {
+    return this.data.amount;
+  }
+  public set value(v) {
+    this.data.amount = v;
+  }
+}
+const TemplateWithNestedComponent: Story<NestedComponent> = (() => ({
+  props: {},
+  component: NestedComponent,
+}));
+export const withNestedMaterialUI = TemplateWithNestedComponent.bind({}, );

@@ -1,15 +1,18 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { AfterContentInit, Directive, ElementRef, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import * as Autonumeric from 'autonumeric';
 @Directive({
   selector: 'input[ngNumberInputFormatDirective]'
 })
-export class NgNumberInputFormatDirective {
+export class NgNumberInputFormatDirective implements OnInit, AfterContentInit {
 
   @Input()
   public set value(v) {
     this._value = v;
     if (this.isFocus) {
-      this.elementRef.nativeElement.value = this._value + '';
+      const currentRawValueToFloat = this.parseFloat(this.rawValue);
+      if (v !== currentRawValueToFloat) {
+        this.elementRef.nativeElement.value = this._value + '';
+      }
     } else {
       this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
     }
@@ -17,6 +20,8 @@ export class NgNumberInputFormatDirective {
   public get value() {
     return this._value;
   }
+
+
 
   constructor(
     protected elementRef: ElementRef<HTMLInputElement>,
@@ -49,6 +54,18 @@ export class NgNumberInputFormatDirective {
   @Output()
   public readonly valueChange = new EventEmitter<number>();
   private isFocus = false;
+
+  public ngOnInit(): void { }
+  public ngAfterContentInit() {
+    /**
+     * force format input value after
+     * directive is mounted
+     * at the first time in angular life cycle
+     * this will allowed our directive can be work with
+     * another directive eg. matInput
+     */
+    this.handleHostListenerBlur();
+  }
 
   private parseFloat(value: string) {
     return parseFloat(value.replace(/,/g, ''));
@@ -100,6 +117,10 @@ export class NgNumberInputFormatDirective {
 
   @HostListener('input', ['$event'])
   public handleHostListenerInput(evt: InputEvent) {
+    if (this.rawValue.length === 0) {
+      return;
+    }
+
     if (/.*\.$/.test(this.rawValue)) {
 
     } else {
