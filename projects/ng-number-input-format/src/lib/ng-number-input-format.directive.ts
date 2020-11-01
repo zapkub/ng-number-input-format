@@ -1,9 +1,9 @@
-import { AfterContentInit, Directive, ElementRef, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { AfterContentInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import * as Autonumeric from 'autonumeric';
 @Directive({
   selector: 'input[ngNumberInputFormatDirective]'
 })
-export class NgNumberInputFormatDirective implements OnInit, AfterContentInit {
+export class NgNumberInputFormatDirective implements AfterContentInit {
 
   @Input()
   public set value(v) {
@@ -55,7 +55,6 @@ export class NgNumberInputFormatDirective implements OnInit, AfterContentInit {
   public readonly valueChange = new EventEmitter<number>();
   private isFocus = false;
 
-  public ngOnInit(): void { }
   public ngAfterContentInit() {
     /**
      * force format input value after
