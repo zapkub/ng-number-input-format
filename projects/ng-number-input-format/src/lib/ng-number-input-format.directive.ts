@@ -38,6 +38,11 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
     return this.elementRef.nativeElement.value || '';
   }
 
+  private get isIntegerIsLimit() {
+    const s = this.rawValue.split('.');
+    return s[0].length === 13;
+  }
+
   private get isDecimalIsLimit() {
     const s = this.rawValue.split('.');
     if (s.length < 2) {
@@ -83,9 +88,21 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
     return evt.key.length === 1 && /[0-9\.-]/.test(evt.key);
   }
 
+  private handleLimitNumberInput() {
+    let integer = this.value.toString().split('.')[0];
+    let decimal = this.value.toString().split('.')[1];
+
+    this.value = this.parseFloat(integer.substring(0, 13) + '.' + decimal);
+  }
+
   @HostListener('keydown', ['$event'])
   public handleHostListenerKeydown(evt: KeyboardEvent) {
     if (this.isNumberInput(evt)) {
+
+      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.') {
+        evt.preventDefault();
+        return false;
+      }
 
       if (this.isDecimalExists && evt.key === '.') {
         evt.preventDefault();
@@ -120,13 +137,15 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
       return;
     }
 
-    if (/.*\.$/.test(this.rawValue)) {
+    // if number start '.' or '.0' will not parseFloat
+    if (/.*\.$/.test(this.rawValue) || /.*(\.0)$/.test(this.rawValue)) {
 
     } else {
       let val = this.parseFloat(this.rawValue);
       if (isNaN(val)) {
         val = 0;
       }
+
       this.valueChange.emit(val);
       this.value = val;
     }
@@ -142,6 +161,7 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @HostListener('blur')
   public handleHostListenerBlur() {
     this.isFocus = false;
+    this.handleLimitNumberInput();
     this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
   }
 
