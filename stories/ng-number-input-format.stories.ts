@@ -7,14 +7,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { moduleMetadata } from '@storybook/angular';
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
 import { Meta, Story } from '@storybook/angular/types-6-0';
-import { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'projects/ng-number-input-format/src/public-api';
+import { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'ng-number-input-format';
 
 
 export default {
   title: 'Example/NgNumberInputFormat',
   decorators: [
     moduleMetadata({
-      declarations: [],
+      declarations: [
+      ],
       imports: [
         BrowserAnimationsModule,
         CommonModule, NgNumberInputFormatModule,
@@ -37,6 +38,7 @@ const Template: Story<NgNumberInputFormatComponent> = (args: NgNumberInputFormat
 
     <ng-number-input-format #dd></ng-number-input-format>
     {{dd.value}}
+    {{'12000' | numberFormat}}
   `,
 });
 

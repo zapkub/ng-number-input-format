@@ -1,16 +1,67 @@
 {
-    "pipes": [],
+    "pipes": [
+        {
+            "name": "NumberFormat",
+            "id": "pipe-NumberFormat-805fd370fb0ce755c39f1efd4220c84b",
+            "file": "projects/ng-number-input-format/src/lib/number-format.pipe.ts",
+            "type": "pipe",
+            "description": "",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "transform",
+                    "args": [
+                        {
+                            "name": "value",
+                            "type": "any"
+                        },
+                        {
+                            "name": "args",
+                            "type": "any[]",
+                            "dotDotDotToken": true
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 8,
+                    "modifierKind": [
+                        114
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "value",
+                            "type": "any",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "args",
+                            "type": "any[]",
+                            "dotDotDotToken": true,
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "ngname": "numberFormat",
+            "sourceCode": "import { Pipe, PipeTransform } from '@angular/core';\n\n\n@Pipe({\n    name: 'numberFormat'\n})\nexport class NumberFormat implements PipeTransform {\n    public transform(value: any, ...args: any[]) {\n        return 'hi';\n    }\n\n}\n"
+        }
+    ],
     "interfaces": [],
     "injectables": [],
     "classes": [],
     "directives": [
         {
             "name": "NgNumberInputFormatDirective",
-            "id": "directive-NgNumberInputFormatDirective-cbd41d4f4a0fc9a3606a336f55f7edef",
+            "id": "directive-NgNumberInputFormatDirective-4e25043b1eaaafe83b3bd7264362c0a5",
             "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.directive.ts",
             "type": "directive",
             "description": "",
-            "sourceCode": "import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';\nimport * as Autonumeric from 'autonumeric';\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective {\n\n  @Input()\n  public set value(v) {\n    this._value = v;\n    if (this.isFocus) {\n      const currentRawValueToFloat = this.parseFloat(this.rawValue);\n      if (v !== currentRawValueToFloat) {\n        this.elementRef.nativeElement.value = this._value + '';\n      }\n    } else {\n      this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n    }\n  }\n  public get value() {\n    return this._value;\n  }\n\n\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n  ) {\n  }\n  private get selectionStart() {\n    return this.elementRef.nativeElement.selectionStart;\n  }\n  private get selectionEnd() {\n    return this.elementRef.nativeElement.selectionEnd;\n  }\n\n  private get rawValue(): string {\n    return this.elementRef.nativeElement.value || '';\n  }\n\n  private get isDecimalIsLimit() {\n    const s = this.rawValue.split('.');\n    if (s.length < 2) {\n      return false;\n    }\n    return s[1].length === 2;\n  }\n\n  private get isDecimalExists() {\n    return this.rawValue.split('.').length > 1;\n  }\n  private _value = 0;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n  private isFocus = false;\n\n  private parseFloat(value: string) {\n    return parseFloat(value.replace(/,/g, ''));\n  }\n  private isDecimalPosition(evt: KeyboardEvent) {\n    const pos = this.selectionStart;\n    const poe = this.selectionEnd;\n    const dotPos = this.rawValue.split('').findIndex(v => v === '.');\n    if (dotPos < 0) {\n      return false;\n    }\n    return pos > dotPos && poe > dotPos;\n  }\n\n  private isNumberInput(evt: KeyboardEvent) {\n    return evt.key.length === 1 && /[0-9\\.-]/.test(evt.key);\n  }\n\n  @HostListener('keydown', ['$event'])\n  public handleHostListenerKeydown(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n\n      if (this.isDecimalExists && evt.key === '.') {\n        evt.preventDefault();\n        return false;\n      }\n\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit && this.selectionEnd === this.rawValue.length) {\n        evt.preventDefault();\n        return false;\n      }\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit) {\n        const start = this.selectionStart;\n        const end = this.selectionEnd;\n        const x = this.rawValue.substring(0, this.selectionEnd);\n        const xx = this.rawValue.substring(this.selectionEnd + 1, this.rawValue.length);\n        const nextval = x + xx;\n        this.elementRef.nativeElement.value = nextval;\n        this.elementRef.nativeElement.selectionStart = start;\n        this.elementRef.nativeElement.selectionEnd = end;\n      }\n    } else {\n      if (evt.key.length === 1 && !evt.altKey && !evt.ctrlKey && !evt.metaKey) {\n        evt.preventDefault();\n        return false;\n      }\n    }\n  }\n\n  @HostListener('input', ['$event'])\n  public handleHostListenerInput(evt: InputEvent) {\n    if (/.*\\.$/.test(this.rawValue)) {\n\n    } else {\n      let val = this.parseFloat(this.rawValue);\n      if (isNaN(val)) {\n        val = 0;\n      }\n      this.valueChange.emit(val);\n      this.value = val;\n    }\n\n  }\n\n  @HostListener('keyup', ['$event'])\n  public handleHostListenerKeyup(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n    }\n  }\n\n  @HostListener('blur')\n  public handleHostListenerBlur() {\n    this.isFocus = false;\n    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n  }\n\n  @HostListener('focus')\n  public handleHostListenerFocus() {\n    this.isFocus = true;\n    let val = this.parseFloat(this.rawValue);\n    if (isNaN(val)) {\n      val = 0;\n    }\n    this.elementRef.nativeElement.value = val + '';\n    this.elementRef.nativeElement.select();\n  }\n}\n",
+            "sourceCode": "import { AfterContentInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';\nimport * as Autonumeric from 'autonumeric';\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective implements AfterContentInit {\n\n  @Input()\n  public set value(v) {\n    this._value = v;\n    if (this.isFocus) {\n      const currentRawValueToFloat = this.parseFloat(this.rawValue);\n      if (v !== currentRawValueToFloat) {\n        this.elementRef.nativeElement.value = this._value + '';\n      }\n    } else {\n      this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n    }\n  }\n  public get value() {\n    return this._value;\n  }\n\n\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n  ) {\n  }\n  private get selectionStart() {\n    return this.elementRef.nativeElement.selectionStart;\n  }\n  private get selectionEnd() {\n    return this.elementRef.nativeElement.selectionEnd;\n  }\n\n  private get rawValue(): string {\n    return this.elementRef.nativeElement.value || '';\n  }\n\n  private get isDecimalIsLimit() {\n    const s = this.rawValue.split('.');\n    if (s.length < 2) {\n      return false;\n    }\n    return s[1].length === 2;\n  }\n\n  private get isDecimalExists() {\n    return this.rawValue.split('.').length > 1;\n  }\n  private _value = 0;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n  private isFocus = false;\n\n  public ngAfterContentInit() {\n    /**\n     * force format input value after\n     * directive is mounted\n     * at the first time in angular life cycle\n     * this will allowed our directive can be work with\n     * another directive eg. matInput\n     */\n    this.handleHostListenerBlur();\n  }\n\n  private parseFloat(value: string) {\n    return parseFloat(value.replace(/,/g, ''));\n  }\n  private isDecimalPosition(evt: KeyboardEvent) {\n    const pos = this.selectionStart;\n    const poe = this.selectionEnd;\n    const dotPos = this.rawValue.split('').findIndex(v => v === '.');\n    if (dotPos < 0) {\n      return false;\n    }\n    return pos > dotPos && poe > dotPos;\n  }\n\n  private isNumberInput(evt: KeyboardEvent) {\n    return evt.key.length === 1 && /[0-9\\.-]/.test(evt.key);\n  }\n\n  @HostListener('keydown', ['$event'])\n  public handleHostListenerKeydown(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n\n      if (this.isDecimalExists && evt.key === '.') {\n        evt.preventDefault();\n        return false;\n      }\n\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit && this.selectionEnd === this.rawValue.length) {\n        evt.preventDefault();\n        return false;\n      }\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit) {\n        const start = this.selectionStart;\n        const end = this.selectionEnd;\n        const x = this.rawValue.substring(0, this.selectionEnd);\n        const xx = this.rawValue.substring(this.selectionEnd + 1, this.rawValue.length);\n        const nextval = x + xx;\n        this.elementRef.nativeElement.value = nextval;\n        this.elementRef.nativeElement.selectionStart = start;\n        this.elementRef.nativeElement.selectionEnd = end;\n      }\n    } else {\n      if (evt.key.length === 1 && !evt.altKey && !evt.ctrlKey && !evt.metaKey) {\n        evt.preventDefault();\n        return false;\n      }\n    }\n  }\n\n  @HostListener('input', ['$event'])\n  public handleHostListenerInput(evt: InputEvent) {\n    if (this.rawValue.length === 0) {\n      return;\n    }\n\n    if (/.*\\.$/.test(this.rawValue)) {\n\n    } else {\n      let val = this.parseFloat(this.rawValue);\n      if (isNaN(val)) {\n        val = 0;\n      }\n      this.valueChange.emit(val);\n      this.value = val;\n    }\n\n  }\n\n  @HostListener('keyup', ['$event'])\n  public handleHostListenerKeyup(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n    }\n  }\n\n  @HostListener('blur')\n  public handleHostListenerBlur() {\n    this.isFocus = false;\n    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n  }\n\n  @HostListener('focus')\n  public handleHostListenerFocus() {\n    this.isFocus = true;\n    let val = this.parseFloat(this.rawValue);\n    if (isNaN(val)) {\n      val = 0;\n    }\n    this.elementRef.nativeElement.value = val + '';\n    this.elementRef.nativeElement.select();\n  }\n}\n",
             "selector": "input[ngNumberInputFormatDirective]",
             "providers": [],
             "inputsClass": [
@@ -33,13 +84,13 @@
                     "name": "blur",
                     "args": [],
                     "argsDecorator": [],
-                    "line": 128
+                    "line": 143
                 },
                 {
                     "name": "focus",
                     "args": [],
                     "argsDecorator": [],
-                    "line": 134
+                    "line": 149
                 },
                 {
                     "name": "input",
@@ -52,7 +103,7 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 107
+                    "line": 118
                 },
                 {
                     "name": "keydown",
@@ -65,7 +116,7 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 76
+                    "line": 87
                 },
                 {
                     "name": "keyup",
@@ -78,7 +129,7 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 122
+                    "line": 137
                 }
             ],
             "propertiesClass": [
@@ -117,7 +168,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 61,
+                    "line": 72,
                     "modifierKind": [
                         112
                     ],
@@ -142,7 +193,7 @@
                     "optional": false,
                     "returnType": "any",
                     "typeParameters": [],
-                    "line": 71,
+                    "line": 82,
                     "modifierKind": [
                         112
                     ],
@@ -157,6 +208,17 @@
                     ]
                 },
                 {
+                    "name": "ngAfterContentInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 58,
+                    "modifierKind": [
+                        114
+                    ]
+                },
+                {
                     "name": "parseFloat",
                     "args": [
                         {
@@ -167,7 +229,7 @@
                     "optional": false,
                     "returnType": "any",
                     "typeParameters": [],
-                    "line": 58,
+                    "line": 69,
                     "modifierKind": [
                         112
                     ],
@@ -181,6 +243,9 @@
                         }
                     ]
                 }
+            ],
+            "implements": [
+                "AfterContentInit"
             ],
             "constructorObj": {
                 "name": "constructor",
@@ -284,7 +349,7 @@
     "components": [
         {
             "name": "NestedComponent",
-            "id": "component-NestedComponent-7d76ac8fa604f1a0d4668be486b1ba04",
+            "id": "component-NestedComponent-85e9a56752b0f2650f1773c13901975c",
             "file": "stories/ng-number-input-format.stories.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -293,7 +358,7 @@
             "providers": [],
             "styleUrls": [],
             "styles": [],
-            "template": "<input [(value)]=\"value\" />\n",
+            "template": "<mat-form-field appearance=\"fill\">\n  <input matInput ngNumberInputFormatDirective [(value)]=\"value\" />\n</mat-form-field>\n",
             "templateUrl": [],
             "viewProviders": [],
             "inputsClass": [],
@@ -305,7 +370,7 @@
                     "type": "object",
                     "optional": false,
                     "description": "",
-                    "line": 51,
+                    "line": 59,
                     "modifierKind": [
                         114
                     ]
@@ -317,7 +382,7 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { CommonModule } from '@angular/common';\nimport { Component } from '@angular/core';\nimport { MatInputModule } from '@angular/material/input';\nimport { moduleMetadata } from '@storybook/angular';\n// also exported from '@storybook/angular' if you can deal with breaking changes in 6.1\nimport { Meta, Story } from '@storybook/angular/types-6-0';\nimport { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'projects/ng-number-input-format/src/public-api';\n\n\nexport default {\n  title: 'Example/NgNumberInputFormat',\n  decorators: [\n    moduleMetadata({\n      declarations: [],\n      imports: [\n        CommonModule, NgNumberInputFormatModule,\n        MatInputModule,\n      ],\n    }),\n  ],\n} as Meta;\n\nconst Template: Story<NgNumberInputFormatComponent> = (args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n  `,\n});\n\nexport const Empty = Template.bind({}, { value: 0.00 });\nexport const TwoWayBinding = Template.bind({}, { value: 10.12 });\nexport const SetValue = Template.bind({});\nexport const Readonly = Template.bind({}, { readonly: true, value: 10.312, });\nexport const Disabled = Template.bind({}, { disabled: true });\nexport const DisabledWithValue = Template.bind({}, { disabled: true, value: 2000.33 });\n\n@Component({\n  template: `\n    <input [(value)]=\"value\" />\n  `,\n})\nclass NestedComponent {\n  public data = {\n    amount: 2012000\n  };\n  public get value() {\n    return this.data.amount;\n  }\n  public set value(v) {\n    this.data.amount = v;\n  }\n}\nconst TemplateWithNestedComponent: Story<NestedComponent> = (() => ({\n  props: {},\n  component: NestedComponent,\n}));\nexport const withNested = TemplateWithNestedComponent.bind({}, );\n",
+            "sourceCode": "import { CommonModule } from '@angular/common';\nimport { Component } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\nimport { MatFormFieldModule } from '@angular/material/form-field';\nimport { MatInputModule } from '@angular/material/input';\nimport { BrowserAnimationsModule } from '@angular/platform-browser/animations';\nimport { moduleMetadata } from '@storybook/angular';\n// also exported from '@storybook/angular' if you can deal with breaking changes in 6.1\nimport { Meta, Story } from '@storybook/angular/types-6-0';\nimport { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'ng-number-input-format';\n\n\nexport default {\n  title: 'Example/NgNumberInputFormat',\n  decorators: [\n    moduleMetadata({\n      declarations: [],\n      imports: [\n        BrowserAnimationsModule,\n        CommonModule, NgNumberInputFormatModule,\n        MatInputModule, MatFormFieldModule,\n        FormsModule,\n      ],\n    }),\n  ],\n} as Meta;\n\nconst Template: Story<NgNumberInputFormatComponent> = (args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n    {{'12000' | numberFormat}}\n  `,\n});\n\nexport const Empty = Template.bind({}, { value: 0.00 });\nexport const TwoWayBinding = Template.bind({}, { value: 10.12 });\nexport const SetValue = Template.bind({});\nexport const Readonly = Template.bind({}, { readonly: true, value: 10.312, });\nexport const Disabled = Template.bind({}, { disabled: true });\nexport const DisabledWithValue = Template.bind({}, { disabled: true, value: 2000.33 });\n\n@Component({\n  template: `\n  <mat-form-field appearance=\"fill\">\n    <input matInput ngNumberInputFormatDirective [(value)]=\"value\" />\n  </mat-form-field>\n  `,\n})\nclass NestedComponent {\n  public data = {\n    amount: 2012000\n  };\n  public get value() {\n    return this.data.amount;\n  }\n  public set value(v) {\n    this.data.amount = v;\n  }\n}\nconst TemplateWithNestedComponent: Story<NestedComponent> = (() => ({\n  props: {},\n  component: NestedComponent,\n}));\nexport const withNestedMaterialUI = TemplateWithNestedComponent.bind({}, );\n",
             "assetsDirs": [],
             "styleUrlsData": "",
             "stylesData": "",
@@ -334,7 +399,7 @@
                             }
                         ],
                         "returnType": "void",
-                        "line": 57,
+                        "line": 65,
                         "jsdoctags": [
                             {
                                 "name": "v",
@@ -349,7 +414,7 @@
                         "name": "value",
                         "type": "",
                         "returnType": "",
-                        "line": 54
+                        "line": 62
                     }
                 }
             }
@@ -455,6 +520,9 @@
                         },
                         {
                             "name": "NgNumberInputFormatDirective"
+                        },
+                        {
+                            "name": "NumberFormat"
                         }
                     ]
                 },
@@ -470,6 +538,9 @@
                         },
                         {
                             "name": "NgNumberInputFormatDirective"
+                        },
+                        {
+                            "name": "NumberFormat"
                         }
                     ]
                 },
@@ -547,7 +618,7 @@
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
                 "type": "Story<NgNumberInputFormatComponent>",
-                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n  `,\n})"
+                "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n    {{'12000' | numberFormat}}\n  `,\n})"
             },
             {
                 "name": "TemplateWithNestedComponent",
@@ -566,7 +637,7 @@
                 "defaultValue": "Template.bind({}, { value: 10.12 })"
             },
             {
-                "name": "withNested",
+                "name": "withNestedMaterialUI",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
                 "file": "stories/ng-number-input-format.stories.ts",
@@ -642,7 +713,7 @@
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
                     "type": "Story<NgNumberInputFormatComponent>",
-                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n  `,\n})"
+                    "defaultValue": "(args: NgNumberInputFormatComponent) => ({\n  props: args,\n  template: `\n    <ng-number-input-format #input [disabled]=\"disabled\" [(value)]=\"value\" [readonly]=\"readonly\"></ng-number-input-format>\n    {{value}}\n    {{input.typeof}}\n\n    <button (click)=\"value = 20123.33\">set value to 20123.33</button>\n    <button (click)=\"value=value+301.21\">add 301.21</button>\n\n    <ng-number-input-format #dd></ng-number-input-format>\n    {{dd.value}}\n    {{'12000' | numberFormat}}\n  `,\n})"
                 },
                 {
                     "name": "TemplateWithNestedComponent",
@@ -661,7 +732,7 @@
                     "defaultValue": "Template.bind({}, { value: 10.12 })"
                 },
                 {
-                    "name": "withNested",
+                    "name": "withNestedMaterialUI",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
                     "file": "stories/ng-number-input-format.stories.ts",
@@ -694,7 +765,16 @@
                 "linktype": "directive",
                 "name": "NgNumberInputFormatDirective",
                 "coveragePercent": 0,
-                "coverageCount": "0/14",
+                "coverageCount": "0/15",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ng-number-input-format/src/lib/number-format.pipe.ts",
+                "type": "pipe",
+                "linktype": "pipe",
+                "name": "NumberFormat",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
                 "status": "low"
             },
             {
@@ -811,7 +891,7 @@
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
-                "name": "withNested",
+                "name": "withNestedMaterialUI",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"

@@ -25,8 +25,7 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
 
   constructor(
     protected elementRef: ElementRef<HTMLInputElement>,
-  ) {
-  }
+  ) { }
   private get selectionStart() {
     return this.elementRef.nativeElement.selectionStart;
   }
@@ -89,8 +88,8 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   }
 
   private handleLimitNumberInput() {
-    let integer = this.value.toString().split('.')[0];
-    let decimal = this.value.toString().split('.')[1];
+    const integer = this.value.toString().split('.')[0];
+    const decimal = this.value.toString().split('.')[1];
 
     this.value = this.parseFloat(integer.substring(0, 13) + '.' + decimal);
   }
@@ -98,7 +97,6 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @HostListener('keydown', ['$event'])
   public handleHostListenerKeydown(evt: KeyboardEvent) {
     if (this.isNumberInput(evt)) {
-
       if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.') {
         evt.preventDefault();
         return false;

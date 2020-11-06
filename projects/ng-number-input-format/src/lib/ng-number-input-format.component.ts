@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { NgNumberInputFormatDirective } from './ng-number-input-format.directive';
 @Component({
   selector: 'ng-number-input-format',
   template: `<input ngNumberInputFormatDirective [value]="value" (valueChange)="valueChange.emit($event)" [disabled]="disabled" [readOnly]="readonly" />`,
@@ -10,6 +11,9 @@ export class NgNumberInputFormatComponent implements OnInit {
   public get typeof() {
     return typeof this.value;
   }
+
+  @ViewChild(NgNumberInputFormatDirective)
+  public readonly numberInputDirective: NgNumberInputFormatDirective;
 
   constructor() { }
 
