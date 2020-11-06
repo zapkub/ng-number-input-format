@@ -59,6 +59,7 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @Output()
   public readonly valueChange = new EventEmitter<number>();
   private isFocus = false;
+  private isSelected = false;
 
   public ngAfterContentInit() {
     /**
@@ -99,9 +100,13 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   public handleHostListenerKeydown(evt: KeyboardEvent) {
     if (this.isNumberInput(evt)) {
 
-      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.') {
+      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.' && !this.isSelected) {
+        this.elementRef.nativeElement.select();
+        this.isSelected = true;
         evt.preventDefault();
         return false;
+      } else {
+        this.isSelected = false;
       }
 
       if (this.isDecimalExists && evt.key === '.') {
