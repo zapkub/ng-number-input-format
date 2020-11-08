@@ -146,8 +146,7 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @HostListener('input', ['$event'])
   public handleHostListenerInput(evt: InputEvent) {
     if (this.rawValue.length === 0) {
-      this.valueChange.emit(0);
-      this.value = 0;
+      return;
     }
 
     // if number start '.' or '.0' will not parseFloat
@@ -174,8 +173,19 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @HostListener('blur')
   public handleHostListenerBlur() {
     this.isFocus = false;
+    if (this.elementRef.nativeElement.value.length === 0) {
+      /**
+       * for empty input value we will
+       * treat it as empty value ( zero )
+       * but only when user lost focus from input box only
+       */
+      this.valueChange.emit(0);
+      this.value = 0;
+      this.elementRef.nativeElement.value = '0';
+    }
     this.handleLimitNumberInput();
     this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
+
   }
 
   @HostListener('focus')

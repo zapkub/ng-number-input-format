@@ -28,6 +28,21 @@ describe('NgNumberInputFormatComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should return zero value if input field is empty', () => {
+    const inputelem = fixture.debugElement.query(By.css('input'));
+
+    inputelem.nativeElement.value = '13.222';
+    inputelem.nativeElement.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+
+    inputelem.nativeElement.value = '';
+    const event = new FocusEvent('blur');
+    inputelem.nativeElement.dispatchEvent(event);
+    fixture.detectChanges();
+    expect(inputelem.nativeElement.value).toEqual('0.00');
+    expect(component.numberInputDirective.value).toEqual(0);
+  });
+
   it('should replace number after decimal point if decimal percission is 2', () => {
     const inputelem = fixture.debugElement.query(By.css('input'));
     inputelem.nativeElement.value = '19.12';
