@@ -146,7 +146,8 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @HostListener('input', ['$event'])
   public handleHostListenerInput(evt: InputEvent) {
     if (this.rawValue.length === 0) {
-      return;
+      this.valueChange.emit(0);
+      this.value = 0;
     }
 
     // if number start '.' or '.0' will not parseFloat
