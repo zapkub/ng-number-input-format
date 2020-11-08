@@ -4,10 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { moduleMetadata } from '@storybook/angular';
+import { Meta, moduleMetadata, Story } from '@storybook/angular';
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
-import { Meta, Story } from '@storybook/angular/types-6-0';
-import { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'ng-number-input-format';
+// import { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'ng-number-input-format';
+import { NgNumberInputFormatComponent, NgNumberInputFormatModule } from 'projects/ng-number-input-format/src/public-api';
 
 
 export default {
@@ -48,6 +48,7 @@ export const SetValue = Template.bind({});
 export const Readonly = Template.bind({}, { readonly: true, value: 10.312, });
 export const Disabled = Template.bind({}, { disabled: true });
 export const DisabledWithValue = Template.bind({}, { disabled: true, value: 2000.33 });
+export const MaximumValue = Template.bind({}, { value: 1234567890123.33 });
 
 @Component({
   template: `

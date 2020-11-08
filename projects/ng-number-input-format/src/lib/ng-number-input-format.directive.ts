@@ -7,18 +7,18 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
 
   @Input()
   public set value(v) {
-    this._value = v;
+    this.numval = v;
     if (this.isFocus) {
       const currentRawValueToFloat = this.parseFloat(this.rawValue);
       if (v !== currentRawValueToFloat) {
-        this.elementRef.nativeElement.value = this._value + '';
+        this.elementRef.nativeElement.value = this.numval + '';
       }
     } else {
       this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
     }
   }
   public get value() {
-    return this._value;
+    return this.numval;
   }
 
 
@@ -53,7 +53,9 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   private get isDecimalExists() {
     return this.rawValue.split('.').length > 1;
   }
-  private _value = 0;
+
+
+  private numval = 0;
 
   @Output()
   public readonly valueChange = new EventEmitter<number>();
@@ -97,7 +99,13 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
   @HostListener('keydown', ['$event'])
   public handleHostListenerKeydown(evt: KeyboardEvent) {
     if (this.isNumberInput(evt)) {
-      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.') {
+
+      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.' && this.selectionStart === this.selectionEnd) {
+        /**
+         * block input if amount length is max but if
+         * cursor of user select more than 1 characters we will allow
+         * user to be able to replace value
+         */
         evt.preventDefault();
         return false;
       }
@@ -111,6 +119,12 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
         evt.preventDefault();
         return false;
       }
+
+      /**
+       * replace number after decimal point if
+       * current value have 2 percision point
+       * and user try to input number before these 2 numbers (after decimal point)
+       */
       if (this.isDecimalPosition(evt) && this.isDecimalIsLimit) {
         const start = this.selectionStart;
         const end = this.selectionEnd;

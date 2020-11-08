@@ -42,6 +42,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "ng-number-input-format"
+    }
+  },
+  "defaultProject": "ng-number-input-format",
+  "cli": {
+    "analytics": false
+  }
 }

@@ -28,6 +28,26 @@ describe('NgNumberInputFormatComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should replace number after decimal point if decimal percission is 2', () => {
+    const inputelem = fixture.debugElement.query(By.css('input'));
+    inputelem.nativeElement.value = '19.12';
+    const event = new KeyboardEvent('keydown', {
+      key: '9'
+    });
+    inputelem.nativeElement.selectionStart = 3;
+    inputelem.nativeElement.selectionEnd = 3;
+    inputelem.nativeElement.dispatchEvent(event);
+    /**
+     * we expect 19.2 because we only remove the next number
+     * after cursor if decimal point has been input during the decimal is limit
+     * the number 9 will be pop-up automatically in another event
+     * not in keydown event
+     */
+    expect(inputelem.nativeElement.value).toEqual('19.2');
+
+
+  });
+
   it('should format on blur', () => {
     const inputelem = fixture.debugElement.query(By.css('input'));
     expect(inputelem.nativeElement.value).toEqual('0.00');
@@ -63,8 +83,6 @@ describe('NgNumberInputFormatComponent', () => {
   it('should not allow input to exceed 13,2 digits', () => {
     const inputelem = fixture.debugElement.query(By.css('input'));
     inputelem.nativeElement.value = '1234567891234.12';
-    inputelem.nativeElement.dispatchEvent(new Event('input'));
-    inputelem.nativeElement.focus();
     const event = new KeyboardEvent('keydown', {
       key: '1'
     });
@@ -74,5 +92,18 @@ describe('NgNumberInputFormatComponent', () => {
     expect(preventDefaultSpy).toHaveBeenCalled();
   });
 
+  it('should allow to edit if value is reach limit length but select with more than 0 character', () => {
+    const inputelem = fixture.debugElement.query(By.css('input'));
+    inputelem.nativeElement.value = '1234567890123.11';
+    const event = new KeyboardEvent('keydown', {
+      key: '1'
+    });
+    const preventDefaultSpy = spyOn(event, 'preventDefault');
+    inputelem.nativeElement.selectionStart = 2;
+    inputelem.nativeElement.selectionEnd = 3;
+    inputelem.nativeElement.dispatchEvent(event);
+    fixture.detectChanges();
+    expect(preventDefaultSpy).not.toHaveBeenCalled();
+  });
 
 });
