@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -52,12 +52,15 @@ export const MaximumValue = Template.bind({}, { value: 1234567890123.33 });
 
 @Component({
   template: `
-  <mat-form-field appearance="fill">
+  <mat-form-field *ngIf="show" appearance="fill">
     <input matInput ngNumberInputFormatDirective [(value)]="value" />
   </mat-form-field>
+  <button (click)="show = !show">Hide/Unhide</button>
+
   `,
 })
 class NestedComponent {
+  public show = true;
   public data = {
     amount: 2012000
   };
@@ -73,3 +76,35 @@ const TemplateWithNestedComponent: Story<NestedComponent> = (() => ({
   component: NestedComponent,
 }));
 export const withNestedMaterialUI = TemplateWithNestedComponent.bind({}, );
+
+
+@Component({
+  template: `
+  <mat-form-field *ngIf="data" appearance="fill">
+    <input matInput ngNumberInputFormatDirective [(value)]="data.value" />
+  </mat-form-field>
+  `,
+})
+class WithLifeCycle implements AfterViewInit {
+  public data?: {
+    value?: number
+  };
+  public ngAfterViewInit(){
+    this.data = {
+      value: 0,
+     };
+    this.cdr.detectChanges();
+    this.data = {
+      value: 19293.21,
+     };
+    this.cdr.detectChanges();
+  }
+  constructor(private cdr: ChangeDetectorRef) {
+
+  }
+}
+const TemplatewithLifeCycle: Story<WithLifeCycle> = () => ({
+  props: {},
+  component: WithLifeCycle,
+});
+export const withLifeCycle = TemplatewithLifeCycle.bind({}, );
