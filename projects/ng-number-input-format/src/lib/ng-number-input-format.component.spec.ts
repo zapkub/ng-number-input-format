@@ -28,6 +28,7 @@ describe('NgNumberInputFormatComponent', () => {
     expect(component).toBeTruthy();
   });
 
+
   it('should return zero value if input field is empty', () => {
     const inputelem = fixture.debugElement.query(By.css('input'));
 

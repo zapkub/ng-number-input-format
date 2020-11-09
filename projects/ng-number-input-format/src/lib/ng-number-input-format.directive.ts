@@ -17,11 +17,11 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
       this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
     }
   }
+
+
   public get value() {
     return this.numval;
   }
-
-
 
   constructor(
     protected elementRef: ElementRef<HTMLInputElement>,
@@ -69,7 +69,15 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
      * this will allowed our directive can be work with
      * another directive eg. matInput
      */
-    this.handleHostListenerBlur();
+    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
+  }
+
+  /**
+   * format value in inputelement
+   * with autonumeric
+   */
+  public forceFormat() {
+    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
   }
 
   private parseFloat(value: string) {
@@ -172,7 +180,6 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
 
   @HostListener('blur')
   public handleHostListenerBlur() {
-    this.isFocus = false;
     if (this.elementRef.nativeElement.value.length === 0) {
       /**
        * for empty input value we will
@@ -185,6 +192,7 @@ export class NgNumberInputFormatDirective implements AfterContentInit {
     }
     this.handleLimitNumberInput();
     this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});
+    this.isFocus = false;
 
   }
 

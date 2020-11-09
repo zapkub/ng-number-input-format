@@ -57,11 +57,11 @@
     "directives": [
         {
             "name": "NgNumberInputFormatDirective",
-            "id": "directive-NgNumberInputFormatDirective-e60feca3a6828e3092e05a02eb4df225",
+            "id": "directive-NgNumberInputFormatDirective-219fe74dbece412b1855601fc02543e3",
             "file": "projects/ng-number-input-format/src/lib/ng-number-input-format.directive.ts",
             "type": "directive",
             "description": "",
-            "sourceCode": "import { AfterContentInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';\nimport * as Autonumeric from 'autonumeric';\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective implements AfterContentInit {\n\n  @Input()\n  public set value(v) {\n    this.numval = v;\n    if (this.isFocus) {\n      const currentRawValueToFloat = this.parseFloat(this.rawValue);\n      if (v !== currentRawValueToFloat) {\n        this.elementRef.nativeElement.value = this.numval + '';\n      }\n    } else {\n      this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n    }\n  }\n  public get value() {\n    return this.numval;\n  }\n\n\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n  ) { }\n  private get selectionStart() {\n    return this.elementRef.nativeElement.selectionStart;\n  }\n  private get selectionEnd() {\n    return this.elementRef.nativeElement.selectionEnd;\n  }\n\n  private get rawValue(): string {\n    return this.elementRef.nativeElement.value || '';\n  }\n\n  private get isIntegerIsLimit() {\n    const s = this.rawValue.split('.');\n    return s[0].length === 13;\n  }\n\n  private get isDecimalIsLimit() {\n    const s = this.rawValue.split('.');\n    if (s.length < 2) {\n      return false;\n    }\n    return s[1].length === 2;\n  }\n\n  private get isDecimalExists() {\n    return this.rawValue.split('.').length > 1;\n  }\n\n\n  private numval = 0;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n  private isFocus = false;\n\n  public ngAfterContentInit() {\n    /**\n     * force format input value after\n     * directive is mounted\n     * at the first time in angular life cycle\n     * this will allowed our directive can be work with\n     * another directive eg. matInput\n     */\n    this.handleHostListenerBlur();\n  }\n\n  private parseFloat(value: string) {\n    return parseFloat(value.replace(/,/g, ''));\n  }\n  private isDecimalPosition(evt: KeyboardEvent) {\n    const pos = this.selectionStart;\n    const poe = this.selectionEnd;\n    const dotPos = this.rawValue.split('').findIndex(v => v === '.');\n    if (dotPos < 0) {\n      return false;\n    }\n    return pos > dotPos && poe > dotPos;\n  }\n\n  private isNumberInput(evt: KeyboardEvent) {\n    return evt.key.length === 1 && /[0-9\\.-]/.test(evt.key);\n  }\n\n  private handleLimitNumberInput() {\n    const integer = this.value.toString().split('.')[0];\n    const decimal = this.value.toString().split('.')[1];\n\n    this.value = this.parseFloat(integer.substring(0, 13) + '.' + decimal);\n  }\n\n  @HostListener('keydown', ['$event'])\n  public handleHostListenerKeydown(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n\n      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.' && this.selectionStart === this.selectionEnd) {\n        /**\n         * block input if amount length is max but if\n         * cursor of user select more than 1 characters we will allow\n         * user to be able to replace value\n         */\n        evt.preventDefault();\n        return false;\n      }\n\n      if (this.isDecimalExists && evt.key === '.') {\n        evt.preventDefault();\n        return false;\n      }\n\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit && this.selectionEnd === this.rawValue.length) {\n        evt.preventDefault();\n        return false;\n      }\n\n      /**\n       * replace number after decimal point if\n       * current value have 2 percision point\n       * and user try to input number before these 2 numbers (after decimal point)\n       */\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit) {\n        const start = this.selectionStart;\n        const end = this.selectionEnd;\n        const x = this.rawValue.substring(0, this.selectionEnd);\n        const xx = this.rawValue.substring(this.selectionEnd + 1, this.rawValue.length);\n        const nextval = x + xx;\n        this.elementRef.nativeElement.value = nextval;\n        this.elementRef.nativeElement.selectionStart = start;\n        this.elementRef.nativeElement.selectionEnd = end;\n      }\n    } else {\n      if (evt.key.length === 1 && !evt.altKey && !evt.ctrlKey && !evt.metaKey) {\n        evt.preventDefault();\n        return false;\n      }\n    }\n  }\n\n  @HostListener('input', ['$event'])\n  public handleHostListenerInput(evt: InputEvent) {\n    if (this.rawValue.length === 0) {\n      /**\n       * for empty input value we will\n       * treat it as empty value ( zero )\n       * but only when user lost focus from input box only\n       */\n      this.valueChange.emit(0);\n      this.value = 0;\n    }\n\n    // if number start '.' or '.0' will not parseFloat\n    if (/.*\\.$/.test(this.rawValue) || /.*(\\.0)$/.test(this.rawValue)) {\n\n    } else {\n      let val = this.parseFloat(this.rawValue);\n      if (isNaN(val)) {\n        val = 0;\n      }\n\n      this.valueChange.emit(val);\n      this.value = val;\n    }\n\n  }\n\n  @HostListener('keyup', ['$event'])\n  public handleHostListenerKeyup(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n    }\n  }\n\n  @HostListener('blur')\n  public handleHostListenerBlur() {\n    this.isFocus = false;\n    this.handleLimitNumberInput();\n    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n  }\n\n  @HostListener('focus')\n  public handleHostListenerFocus() {\n    this.isFocus = true;\n    let val = this.parseFloat(this.rawValue);\n    if (isNaN(val)) {\n      val = 0;\n    }\n    this.elementRef.nativeElement.value = val + '';\n    this.elementRef.nativeElement.select();\n  }\n}\n",
+            "sourceCode": "import { AfterContentInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';\nimport * as Autonumeric from 'autonumeric';\n@Directive({\n  selector: 'input[ngNumberInputFormatDirective]'\n})\nexport class NgNumberInputFormatDirective implements AfterContentInit {\n\n  @Input()\n  public set value(v) {\n    this.numval = v;\n    if (this.isFocus) {\n      const currentRawValueToFloat = this.parseFloat(this.rawValue);\n      if (v !== currentRawValueToFloat) {\n        this.elementRef.nativeElement.value = this.numval + '';\n      }\n    } else {\n      this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n    }\n  }\n  public get value() {\n    return this.numval;\n  }\n\n\n\n  constructor(\n    protected elementRef: ElementRef<HTMLInputElement>,\n  ) { }\n  private get selectionStart() {\n    return this.elementRef.nativeElement.selectionStart;\n  }\n  private get selectionEnd() {\n    return this.elementRef.nativeElement.selectionEnd;\n  }\n\n  private get rawValue(): string {\n    return this.elementRef.nativeElement.value || '';\n  }\n\n  private get isIntegerIsLimit() {\n    const s = this.rawValue.split('.');\n    return s[0].length === 13;\n  }\n\n  private get isDecimalIsLimit() {\n    const s = this.rawValue.split('.');\n    if (s.length < 2) {\n      return false;\n    }\n    return s[1].length === 2;\n  }\n\n  private get isDecimalExists() {\n    return this.rawValue.split('.').length > 1;\n  }\n\n\n  private numval = 0;\n\n  @Output()\n  public readonly valueChange = new EventEmitter<number>();\n  private isFocus = false;\n\n  public ngAfterContentInit() {\n    /**\n     * force format input value after\n     * directive is mounted\n     * at the first time in angular life cycle\n     * this will allowed our directive can be work with\n     * another directive eg. matInput\n     */\n    this.handleHostListenerBlur();\n    // this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n  }\n\n  /**\n   * format value in inputelement\n   */\n  public forceForamt() {\n    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n  }\n\n  private parseFloat(value: string) {\n    return parseFloat(value.replace(/,/g, ''));\n  }\n  private isDecimalPosition(evt: KeyboardEvent) {\n    const pos = this.selectionStart;\n    const poe = this.selectionEnd;\n    const dotPos = this.rawValue.split('').findIndex(v => v === '.');\n    if (dotPos < 0) {\n      return false;\n    }\n    return pos > dotPos && poe > dotPos;\n  }\n\n  private isNumberInput(evt: KeyboardEvent) {\n    return evt.key.length === 1 && /[0-9\\.-]/.test(evt.key);\n  }\n\n  private handleLimitNumberInput() {\n    const integer = this.value.toString().split('.')[0];\n    const decimal = this.value.toString().split('.')[1];\n\n    this.value = this.parseFloat(integer.substring(0, 13) + '.' + decimal);\n  }\n\n  @HostListener('keydown', ['$event'])\n  public handleHostListenerKeydown(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n\n      if (!this.isDecimalPosition(evt) && this.isIntegerIsLimit && evt.key !== '.' && this.selectionStart === this.selectionEnd) {\n        /**\n         * block input if amount length is max but if\n         * cursor of user select more than 1 characters we will allow\n         * user to be able to replace value\n         */\n        evt.preventDefault();\n        return false;\n      }\n\n      if (this.isDecimalExists && evt.key === '.') {\n        evt.preventDefault();\n        return false;\n      }\n\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit && this.selectionEnd === this.rawValue.length) {\n        evt.preventDefault();\n        return false;\n      }\n\n      /**\n       * replace number after decimal point if\n       * current value have 2 percision point\n       * and user try to input number before these 2 numbers (after decimal point)\n       */\n      if (this.isDecimalPosition(evt) && this.isDecimalIsLimit) {\n        const start = this.selectionStart;\n        const end = this.selectionEnd;\n        const x = this.rawValue.substring(0, this.selectionEnd);\n        const xx = this.rawValue.substring(this.selectionEnd + 1, this.rawValue.length);\n        const nextval = x + xx;\n        this.elementRef.nativeElement.value = nextval;\n        this.elementRef.nativeElement.selectionStart = start;\n        this.elementRef.nativeElement.selectionEnd = end;\n      }\n    } else {\n      if (evt.key.length === 1 && !evt.altKey && !evt.ctrlKey && !evt.metaKey) {\n        evt.preventDefault();\n        return false;\n      }\n    }\n  }\n\n  @HostListener('input', ['$event'])\n  public handleHostListenerInput(evt: InputEvent) {\n    if (this.rawValue.length === 0) {\n      return;\n    }\n\n    // if number start '.' or '.0' will not parseFloat\n    if (/.*\\.$/.test(this.rawValue) || /.*(\\.0)$/.test(this.rawValue)) {\n\n    } else {\n      let val = this.parseFloat(this.rawValue);\n      if (isNaN(val)) {\n        val = 0;\n      }\n\n      this.valueChange.emit(val);\n      this.value = val;\n    }\n\n  }\n\n  @HostListener('keyup', ['$event'])\n  public handleHostListenerKeyup(evt: KeyboardEvent) {\n    if (this.isNumberInput(evt)) {\n    }\n  }\n\n  @HostListener('blur')\n  public handleHostListenerBlur() {\n    if (this.elementRef.nativeElement.value.length === 0) {\n      /**\n       * for empty input value we will\n       * treat it as empty value ( zero )\n       * but only when user lost focus from input box only\n       */\n      this.valueChange.emit(0);\n      this.value = 0;\n      this.elementRef.nativeElement.value = '0';\n    }\n    this.handleLimitNumberInput();\n    this.elementRef.nativeElement.value = Autonumeric.format.bind(Autonumeric)(this.value, {});\n    this.isFocus = false;\n\n  }\n\n  @HostListener('focus')\n  public handleHostListenerFocus() {\n    this.isFocus = true;\n    let val = this.parseFloat(this.rawValue);\n    if (isNaN(val)) {\n      val = 0;\n    }\n    this.elementRef.nativeElement.value = val + '';\n    this.elementRef.nativeElement.select();\n  }\n}\n",
             "selector": "input[ngNumberInputFormatDirective]",
             "providers": [],
             "inputsClass": [
@@ -84,13 +84,13 @@
                     "name": "blur",
                     "args": [],
                     "argsDecorator": [],
-                    "line": 180
+                    "line": 182
                 },
                 {
                     "name": "focus",
                     "args": [],
                     "argsDecorator": [],
-                    "line": 187
+                    "line": 200
                 },
                 {
                     "name": "input",
@@ -103,7 +103,7 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 147
+                    "line": 155
                 },
                 {
                     "name": "keydown",
@@ -116,7 +116,7 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 100
+                    "line": 108
                 },
                 {
                     "name": "keyup",
@@ -129,7 +129,7 @@
                     "argsDecorator": [
                         "$event"
                     ],
-                    "line": 174
+                    "line": 176
                 }
             ],
             "propertiesClass": [
@@ -158,12 +158,24 @@
             ],
             "methodsClass": [
                 {
+                    "name": "forceForamt",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 79,
+                    "description": "<p>format value in inputelement</p>\n",
+                    "modifierKind": [
+                        114
+                    ]
+                },
+                {
                     "name": "handleLimitNumberInput",
                     "args": [],
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 92,
+                    "line": 100,
                     "modifierKind": [
                         112
                     ]
@@ -179,7 +191,7 @@
                     "optional": false,
                     "returnType": "boolean",
                     "typeParameters": [],
-                    "line": 78,
+                    "line": 86,
                     "modifierKind": [
                         112
                     ],
@@ -204,7 +216,7 @@
                     "optional": false,
                     "returnType": "any",
                     "typeParameters": [],
-                    "line": 88,
+                    "line": 96,
                     "modifierKind": [
                         112
                     ],
@@ -240,7 +252,7 @@
                     "optional": false,
                     "returnType": "any",
                     "typeParameters": [],
-                    "line": 75,
+                    "line": 83,
                     "modifierKind": [
                         112
                     ],
@@ -818,8 +830,8 @@
                 "type": "directive",
                 "linktype": "directive",
                 "name": "NgNumberInputFormatDirective",
-                "coveragePercent": 0,
-                "coverageCount": "0/16",
+                "coveragePercent": 5,
+                "coverageCount": "1/17",
                 "status": "low"
             },
             {
